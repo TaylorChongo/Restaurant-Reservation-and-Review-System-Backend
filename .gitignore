@@ -1,0 +1,12 @@
+# Virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Secrets (database passwords)
+.env
+
+# Editor settings
+.vscode/
