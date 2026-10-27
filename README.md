@@ -49,7 +49,53 @@ Backend for booking restaurant tables and storing reviews, using PostgreSQL, Red
 
 ## Schema
 
-See [er_diagram.md](er_diagram.md). The schema is in 3NF:
+```mermaid
+erDiagram
+    RESTAURANTS ||--o{ RESTAURANT_TABLES : has
+    RESTAURANTS ||--o{ REVIEWS : receives
+    CUSTOMERS ||--o{ RESERVATIONS : makes
+    CUSTOMERS ||--o{ REVIEWS : writes
+    RESTAURANT_TABLES ||--o{ RESERVATIONS : "booked in"
+
+    RESTAURANTS {
+        int id PK
+        varchar name
+        varchar city
+        point location
+        jsonb menu
+        jsonb opening_hours
+    }
+    RESTAURANT_TABLES {
+        int id PK
+        int restaurant_id FK
+        int table_number
+        int capacity
+    }
+    CUSTOMERS {
+        int id PK
+        varchar full_name
+        varchar email
+        varchar phone
+    }
+    RESERVATIONS {
+        int id PK
+        int table_id FK
+        int customer_id FK
+        int party_size
+        timestamp start_time
+        timestamp end_time
+        varchar status
+    }
+    REVIEWS {
+        int id PK
+        int restaurant_id FK
+        int customer_id FK
+        int rating
+        timestamp created_at
+    }
+```
+
+The schema is in 3NF:
 
 - `reservations` links to a table, not a restaurant. The restaurant is found through the table, so it is stored only once.
 - Review ratings are in PostgreSQL so they can be averaged and ranked with SQL. The long review text is in MongoDB.
