@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from psycopg2 import pool
+from psycopg2.extensions import connection
 
 # Read the settings from the .env file
 load_dotenv()
@@ -18,12 +19,12 @@ connection_pool = pool.ThreadedConnectionPool(
 )
 
 
-def get_connection():
+def get_connection() -> connection:
     """Borrow a connection from the pool."""
     return connection_pool.getconn()
 
 
-def release_connection(conn):
+def release_connection(conn: connection) -> None:
     """Give the connection back to the pool."""
     connection_pool.putconn(conn)
 

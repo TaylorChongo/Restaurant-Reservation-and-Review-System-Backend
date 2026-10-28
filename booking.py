@@ -1,7 +1,15 @@
+from datetime import datetime
+
 from db import get_connection, release_connection
 
 
-def book_table(table_id, customer_id, party_size, start_time, end_time):
+def book_table(
+    table_id: int,
+    customer_id: int,
+    party_size: int,
+    start_time: datetime | str,
+    end_time: datetime | str,
+) -> int | None:
     """Book a table if it is free. Returns the new reservation id, or None."""
     conn = get_connection()
     cur = conn.cursor()
