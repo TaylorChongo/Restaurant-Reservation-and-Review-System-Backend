@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from cache import clear_table_cache
 from db import get_connection, release_connection
 
 
@@ -59,6 +60,9 @@ def book_table(
         )
         reservation_id = cur.fetchone()[0]
         conn.commit()
+
+        # The table's cached availability is now out of date, so delete it
+        clear_table_cache(table_id)
         return reservation_id
 
     except Exception:
