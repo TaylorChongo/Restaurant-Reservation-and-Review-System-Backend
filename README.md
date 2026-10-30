@@ -89,6 +89,23 @@ Activate the virtual environment first, then:
 
 Running `booking.py` or `test_concurrency.py` a second time gives different results, because the slots are already booked. Run `seed.sql` again to reset.
 
+## Tests
+
+PostgreSQL, Redis and MongoDB must be running, and `seed.sql` must be loaded. Then:
+
+```powershell
+pytest -v
+```
+
+| File | What it checks |
+|---|---|
+| `tests/test_booking.py` | Free slot booked, overlap refused, back-to-back allowed, table too small, missing table, 5 simultaneous bookings give exactly 1 success |
+| `tests/test_cache.py` | Availability is cached in Redis with a 60-second expiry, a booking clears the cache, a booked table shows as unavailable |
+| `tests/test_reviews.py` | Rating saved in PostgreSQL and text in MongoDB with the same `review_id`, an invalid rating saves nothing |
+| `tests/test_queries.py` | CTE skips busy and too-small tables, `RANK()` puts the best restaurant first in each city, nearest restaurants are sorted by distance |
+
+Tests only book on 1 Jan 2030 and mark their reviews with `[TEST]`. A fixture in `tests/conftest.py` deletes this data before and after every test, so the tests can be run again and again.
+
 ## Schema
 
 ```mermaid
