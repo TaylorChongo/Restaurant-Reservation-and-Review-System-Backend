@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from cache import clear_table_cache
-from db import get_connection, release_connection
+from app.cache import clear_table_cache
+from app.db import get_connection, release_connection
 
 
 def book_table(
@@ -76,7 +76,7 @@ def book_table(
         release_connection(conn)
 
 
-# Quick test: run "python booking.py"
+# Quick test: run "python -m app.booking" from the project folder
 if __name__ == "__main__":
     # In seed.sql, table 2 is already booked from 19:00 to 21:00
     print(book_table(2, 4, 2, "2026-11-01 20:00", "2026-11-01 22:00"))  # overlaps

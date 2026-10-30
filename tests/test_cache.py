@@ -1,5 +1,5 @@
-from booking import book_table
-from cache import is_table_available, redis_client
+from app.booking import book_table
+from app.cache import is_table_available, redis_client
 
 TABLE = 2
 START = "2030-01-01 19:00"

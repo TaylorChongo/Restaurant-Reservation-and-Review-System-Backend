@@ -1,6 +1,6 @@
 import threading
 
-from booking import book_table
+from app.booking import book_table
 
 # From seed.sql: table 1 has 2 seats, table 2 has 4 seats
 SMALL_TABLE = 1

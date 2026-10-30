@@ -4,7 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-from db import get_connection, release_connection
+from app.db import get_connection, release_connection
 
 load_dotenv()
 
@@ -57,7 +57,7 @@ def get_reviews(restaurant_id: int) -> list[dict]:
     return list(reviews_collection.find({"restaurant_id": restaurant_id}, {"_id": 0}))
 
 
-# Quick test: run "python reviews.py"
+# Quick test: run "python -m app.reviews" from the project folder
 if __name__ == "__main__":
     new_id = add_review(1, 4, 5, "The brochettes were perfectly grilled and the staff were very friendly.")
     print("New review id:", new_id)

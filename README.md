@@ -34,8 +34,8 @@ Backend for booking restaurant tables and storing reviews, using PostgreSQL, Red
 3. Create the tables and load sample data:
 
    ```powershell
-   psql -U postgres -d reservation_db -f schema.sql
-   psql -U postgres -d reservation_db -f seed.sql
+   psql -U postgres -d reservation_db -f sql/schema.sql
+   psql -U postgres -d reservation_db -f sql/seed.sql
    ```
 
 4. Create a `.env` file in the project folder (it is not committed to Git):
@@ -53,41 +53,46 @@ Backend for booking restaurant tables and storing reviews, using PostgreSQL, Red
 5. For the performance tests, load the large data set and the indexes:
 
    ```powershell
-   psql -U postgres -d reservation_db -f bulk_data.sql
-   psql -U postgres -d reservation_db -f indexes.sql
+   psql -U postgres -d reservation_db -f sql/bulk_data.sql
+   psql -U postgres -d reservation_db -f sql/indexes.sql
    ```
 
-## Project files
+## Project structure
 
-| File | Purpose |
-|---|---|
-| `schema.sql` | Creates the 5 tables with keys and constraints |
-| `seed.sql` | Sample data: 4 restaurants in Kigali and Musanze, 12 tables, 4 customers |
-| `bulk_data.sql` | Large test data: 1,000 restaurants, 10,000 tables, 300,000 reservations |
-| `indexes.sql` | B-tree indexes on time slots and capacity, GiST index on location |
-| `queries.sql` | CTE availability query, `RANK()` per city, `EXPLAIN ANALYZE`, nearest restaurants |
-| `db.py` | PostgreSQL connection pool |
-| `booking.py` | Atomic reservation booking |
-| `cache.py` | Redis cache for table availability |
-| `reviews.py` | Reviews: rating in PostgreSQL, long text in MongoDB |
-| `test_concurrency.py` | Five customers try to book the same table at the same time |
-| `er_diagram.md` | ER diagram (Mermaid) |
-| `requirements.txt` | Python packages |
+```
+reservation-backend/
+├── app/                    Python code
+│   ├── db.py               PostgreSQL connection pool
+│   ├── booking.py          Atomic reservation booking
+│   ├── cache.py            Redis cache for table availability
+│   └── reviews.py          Reviews: rating in PostgreSQL, long text in MongoDB
+├── sql/                    SQL files
+│   ├── schema.sql          Creates the 5 tables with keys and constraints
+│   ├── seed.sql            Sample data: 4 restaurants in Kigali and Musanze, 12 tables, 4 customers
+│   ├── bulk_data.sql       Large test data: 1,000 restaurants, 10,000 tables, 300,000 reservations
+│   ├── indexes.sql         B-tree indexes on time slots and capacity, GiST index on location
+│   ├── queries.sql         CTE availability, RANK() per city, EXPLAIN ANALYZE, nearest restaurants
+│   └── explain_demo.sql    The availability query with and without the time index
+├── tests/                  pytest tests
+├── pytest.ini              pytest settings
+├── requirements.txt        Python packages
+└── README.md
+```
 
 ## How to run
 
-Activate the virtual environment first, then:
+Activate the virtual environment first, then run these from the project folder:
 
 | Command | What it shows |
 |---|---|
-| `python db.py` | The connection pool works and prints the restaurant count (4 with `seed.sql`, 1,004 after `bulk_data.sql`) |
-| `python booking.py` | An overlapping booking is refused, a free one succeeds, a too-small table is refused |
-| `python test_concurrency.py` | Only 1 of 5 simultaneous bookings succeeds |
-| `python cache.py` | First check comes from PostgreSQL, the second from Redis |
-| `python reviews.py` | Saves a review and lists the restaurant's reviews from MongoDB |
-| `psql -U postgres -d reservation_db -f queries.sql` | Runs all analytical queries |
+| `python -m app.db` | The connection pool works and prints the restaurant count (4 with `seed.sql`, 1,004 after `bulk_data.sql`) |
+| `python -m app.booking` | An overlapping booking is refused, a free one succeeds, a too-small table is refused |
+| `python -m app.cache` | First check comes from PostgreSQL, the second from Redis |
+| `python -m app.reviews` | Saves a review and lists the restaurant's reviews from MongoDB |
+| `psql -U postgres -d reservation_db -f sql/queries.sql` | Runs all analytical queries |
+| `psql -U postgres -d reservation_db -f sql/explain_demo.sql` | Query plan and time with and without the time index |
 
-Running `booking.py` or `test_concurrency.py` a second time gives different results, because the slots are already booked. Run `seed.sql` again to reset.
+Running `app.booking` a second time gives different results, because the slots are already booked. Run `sql/seed.sql` again to reset.
 
 ## Tests
 
@@ -170,7 +175,7 @@ The schema is in 3NF:
 
 All queries are parameterized (`%s`), so user input is never run as SQL.
 
-`test_concurrency.py` starts 5 threads at the same moment, all booking the same table and time. Result: 1 booking succeeds and 4 are refused.
+`test_only_one_of_five_simultaneous_bookings_succeeds` in `tests/test_booking.py` starts 5 threads at the same moment, all booking the same table and time. Result: 1 booking succeeds and 4 are refused.
 
 ## Redis and MongoDB
 

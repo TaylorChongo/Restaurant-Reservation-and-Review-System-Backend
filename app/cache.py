@@ -3,7 +3,7 @@ import os
 import redis
 from dotenv import load_dotenv
 
-from db import get_connection, release_connection
+from app.db import get_connection, release_connection
 
 load_dotenv()
 
@@ -59,7 +59,7 @@ def clear_table_cache(table_id: int) -> None:
         redis_client.delete(key)
 
 
-# Quick test: run "python cache.py"
+# Quick test: run "python -m app.cache" from the project folder
 if __name__ == "__main__":
     # Ask the same question twice
     print(is_table_available(6, "2026-11-03 19:00", "2026-11-03 21:00"))

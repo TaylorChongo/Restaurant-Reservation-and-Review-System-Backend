@@ -1,7 +1,7 @@
 import pytest
 
-from db import get_connection, release_connection
-from reviews import add_review, get_reviews, reviews_collection
+from app.db import get_connection, release_connection
+from app.reviews import add_review, get_reviews, reviews_collection
 
 
 def get_rating(review_id: int):

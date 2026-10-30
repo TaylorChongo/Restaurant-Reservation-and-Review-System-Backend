@@ -1,8 +1,8 @@
 import pytest
 
-from cache import redis_client
-from db import get_connection, release_connection
-from reviews import reviews_collection
+from app.cache import redis_client
+from app.db import get_connection, release_connection
+from app.reviews import reviews_collection
 
 # Tests only book on this day, and mark their reviews with this text,
 # so we can find and delete everything they create

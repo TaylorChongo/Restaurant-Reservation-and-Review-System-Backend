@@ -1,9 +1,9 @@
-from db import get_connection, release_connection
+from app.db import get_connection, release_connection
 
 
 def run_query(number: int) -> list[tuple]:
     """Run query number N from queries.sql and return its rows."""
-    text = open("queries.sql", encoding="utf-8").read()
+    text = open("sql/queries.sql", encoding="utf-8").read()
     # Each query starts with a title comment like "-- 1. ..."
     after_title = text.split(f"-- {number}.")[1]
     # Skip the rest of the title line

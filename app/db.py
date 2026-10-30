@@ -29,7 +29,7 @@ def release_connection(conn: connection) -> None:
     connection_pool.putconn(conn)
 
 
-# Quick test: run "python db.py"
+# Quick test: run "python -m app.db" from the project folder
 if __name__ == "__main__":
     conn = get_connection()
     cur = conn.cursor()

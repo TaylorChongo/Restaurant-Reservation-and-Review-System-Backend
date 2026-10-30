@@ -1,5 +1,5 @@
 -- Shows the availability query WITHOUT and WITH the time index.
--- Run: psql -U postgres -d reservation_db -f explain_demo.sql
+-- Run: psql -U postgres -d reservation_db -f sql/explain_demo.sql
 -- The index is only removed inside a transaction, then put back by ROLLBACK.
 
 BEGIN;
