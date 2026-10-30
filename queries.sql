@@ -36,3 +36,31 @@ SELECT city, name, avg_rating, review_count,
        RANK() OVER (PARTITION BY city ORDER BY avg_rating DESC) AS city_rank
 FROM averages
 ORDER BY city, city_rank;
+
+
+-- 3. EXPLAIN ANALYZE: query 1 on a busy December evening (run before and after indexes.sql)
+EXPLAIN ANALYZE
+WITH big_enough AS (
+    SELECT id, restaurant_id, table_number, capacity
+    FROM restaurant_tables
+    WHERE capacity >= 4
+),
+busy AS (
+    SELECT table_id
+    FROM reservations
+    WHERE status = 'confirmed'
+      AND start_time < '2026-12-15 21:00'
+      AND end_time > '2026-12-15 19:00'
+)
+SELECT r.name, r.city, b.table_number, b.capacity
+FROM big_enough b
+JOIN restaurants r ON r.id = b.restaurant_id
+WHERE b.id NOT IN (SELECT table_id FROM busy)
+ORDER BY r.name, b.capacity;
+
+
+-- 4. Location: the 5 restaurants nearest to central Kigali (uses the GiST index)
+SELECT name, city, ROUND((location <-> POINT(30.0619, -1.9441))::numeric, 4) AS distance
+FROM restaurants
+ORDER BY location <-> POINT(30.0619, -1.9441)
+LIMIT 5;
